@@ -128,9 +128,11 @@ class Product extends BaseController
             $combi = new \Combination($combiId);
 
             $valIds = array();
-
+            
+            /** @var \jtl\Connector\Model\ProductVariation $variation */
             foreach ($data->getVariations() as $variation) {
                 $attrNames = array();
+                $attrGrpId = "";
                 foreach ($variation->getI18ns() as $varI18n) {
                     $langId = Utils::getInstance()->getLanguageIdByIso($varI18n->getLanguageISO());
 
@@ -139,7 +141,7 @@ class Product extends BaseController
                     if (!empty($varName)) {
                         $attrNames[$langId] = $varName;
                     }
-
+                    
                     if ($langId == \Context::getContext()->language->id) {
                         $attrGrpId = $this->db->getValue('SELECT id_attribute_group FROM '._DB_PREFIX_.'attribute_group_lang WHERE name="'.$varName.'"');
                     }
@@ -149,6 +151,12 @@ class Product extends BaseController
                 $attrGrp->name = $attrNames;
                 $attrGrp->public_name = $attrNames;
                 $attrGrp->group_type = 'select';
+                
+                switch($variation->getType()) {
+                    case \jtl\Connector\Model\ProductVariation::TYPE_RADIO:
+                        $attrGrp->group_type = 'radio';
+                        break;
+                }
 
                 $attrGrp->save();
 
