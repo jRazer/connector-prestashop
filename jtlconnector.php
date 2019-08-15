@@ -252,7 +252,19 @@ class JTLConnector extends Module
             'description' => sprintf('<b>%s</b><br>%s: <b>%s</b><br/>',
                 $this->l('Please enter the following URL in your Wawi connector setup:'),
                 $this->l('The "Onlineshop URL" is'),
-                $this->context->link->getModuleLink('jtlconnector', 'api')),
+                sprintf('%s%s',
+                    $protocol = isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) ||
+                    isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' ? 'https://' : 'http://',
+                    str_replace(
+                        'http://',
+                        '',
+                        str_replace(
+                            'https://',
+                            '',
+                            $this->context->link->getModuleLink('jtlconnector', 'api'))
+                    )
+                )
+            ),
             'input'       => [
                 [
                     'type'     => 'textbutton',
